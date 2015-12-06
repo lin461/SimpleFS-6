@@ -98,7 +98,10 @@ void *sfs_init(struct fuse_conn_info *conn)
 {
     fprintf(stderr, "in bb-init\n");
     log_msg("\nsfs_init()\n");
-    
+    int counter1=0;
+    char *zeroes = calloc(1,BLOCK_SIZE);
+    for (counter1=0;counter1<NO_OF_BLOCKS;counter1++)
+        block_write(counter1,(const void *)zeroes);
     log_conn(conn);
     log_fuse_context(fuse_get_context());
 
