@@ -22,8 +22,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
-#include <math.h>
-#include <stdbool.h>
 
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
@@ -48,52 +46,6 @@
  * Introduced in version 2.3
  * Changed in version 2.6
  */
-#define SUPERBLOCK_START 0
-#define NO_OF_BLOCKS 20000
-    
-typedef struct
-    {
-     long driveSize; // size of drive
-     long freeBlocks; // no of free blocks available for users
-     bool blockStatus [NO_OF_BLOCKS]; // 0 if free, 1 otherwise 
-     int iNodeBlocksStart; //Block no from where iNode's begin
-     int noOfInodeBlocks;  //no of contiguous blocks which contains iNode
-     int noOfFreeInodes;   // Number of free inodes
-     time_t creationDateTime;  // Time of creation of the superblock
-     time_t lastUpdatedDateTime;  // Time when superblock was last updated
-    } superBlock;
-
-
-#define NO_OF_DIRECT_POINTERS 10
-#define NO_OF_SINGLE_INDIRECTION_POINTERS 5
-#define NO_OF_DOUBLE_INDIRECTION_POINTERS 3
-#define MAX_FILE_NAME_SIZE 64 
-#define INODES_PER_BLOCK (int)floor(BLOCK_SIZE/sizeof(iNode))
-#define NO_OF_POINTERS_IN_INDIRECT_BLOCKS (int)floor(BLOCK_SIZE/sizeof(long))
-    
- typedef struct
-    {
-     long inodeNo; // Unique identification number of each inode
-     int type;     // file/directory inode
-     char name[MAX_FILE_NAME_SIZE];  // Name of the file/directory
-     int userID;   // Owner of the file/directory
-     long totalFileSize;  // Size of the file
-     long noOfBlocks;     // Number of blocks allocated to the file
-     bool inUse;          // Status of inode
-     long dataBlockNos[NO_OF_DIRECT_POINTERS];  
-     long singleIndirectionPointers[NO_OF_SINGLE_INDIRECTION_POINTERS];
-     long doubleIndirectionPointers[NO_OF_DOUBLE_INDIRECTION_POINTERS];
-     time_t creationDateTime;   // Time of creation of the file/directory
-     time_t lastUpdatedDateTime;  // Time of last updation of file/directory
-     time_t lastAccessedDateTime; // Time when file/directory was last accessed
-    } iNode;
- 
-
-    typedef struct
-    {
-       long pointers[NO_OF_POINTERS_IN_INDIRECT_BLOCKS]; 
-    } indirectBlocks;
-
 void *sfs_init(struct fuse_conn_info *conn)
 {
     fprintf(stderr, "in bb-init\n");
