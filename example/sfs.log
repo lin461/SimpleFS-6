@@ -9,6 +9,26 @@ sfs_init()
     capable = 0000007b
     want = 00000010
     context:
+<<<<<<< HEAD
+    fuse = 00732510
+    uid = 0
+    gid = 0
+    pid = 0
+    private_data = 00732010
+    logfile = 00732030
+    diskfile = /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/testfsfile
+    umask = 00000
+
+sfs_getattr(path="/.git", statbuf=0xc7e69d40)
+
+sfs_getattr(path="/.git", statbuf=0xc7468d40)
+
+sfs_getattr(path="/.git", statbuf=0xc7e69d40)
+
+sfs_getattr(path="/.git", statbuf=0xc7468d40)
+
+sfs_opendir(path="/", fi=0xc7e69d80)
+=======
     fuse = 01074510
     uid = 0
     gid = 0
@@ -21,3 +41,4 @@ sfs_init()
 print superBlock() - creationTime 0
 
 sfs_destroy(userdata=0x01074010)
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221

@@ -772,7 +772,11 @@ pkg_cv_FUSE_LIBS='-pthread -L/lib64 -lfuse -lrt -ldl  '
 ## Output variables. ##
 ## ----------------- ##
 
+<<<<<<< HEAD
+ACLOCAL='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing aclocal-1.14'
+=======
 ACLOCAL='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing aclocal-1.14'
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
@@ -781,9 +785,15 @@ AM_BACKSLASH='\'
 AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
 AM_DEFAULT_VERBOSITY='1'
 AM_V='$(V)'
+<<<<<<< HEAD
+AUTOCONF='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing autoconf'
+AUTOHEADER='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing autoheader'
+AUTOMAKE='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing automake-1.14'
+=======
 AUTOCONF='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing autoconf'
 AUTOHEADER='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing autoheader'
 AUTOMAKE='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing automake-1.14'
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 AWK='gawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
@@ -809,7 +819,11 @@ LDFLAGS=''
 LIBOBJS=''
 LIBS=''
 LTLIBOBJS=''
+<<<<<<< HEAD
+MAKEINFO='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing makeinfo'
+=======
 MAKEINFO='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing makeinfo'
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 MKDIR_P='/bin/mkdir -p'
 OBJEXT='o'
 PACKAGE='fuse-tutorial'
@@ -850,7 +864,11 @@ host_alias=''
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
+<<<<<<< HEAD
+install_sh='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/install-sh'
+=======
 install_sh='${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/install-sh'
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'

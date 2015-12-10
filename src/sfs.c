@@ -22,10 +22,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+<<<<<<< HEAD
+=======
 #include <math.h>
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
@@ -50,6 +53,8 @@
  * Introduced in version 2.3
  * Changed in version 2.6
  */
+<<<<<<< HEAD
+=======
 #define SUPERBLOCK_START 0
 #define NO_OF_BLOCKS 20000
     
@@ -143,10 +148,17 @@ int blockwrite(int blockNo, long offset,const void *data,long sizeOfData)
 
 int blockread(int blockNo, long offset,const void *data,long sizeOfData);
 
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 void *sfs_init(struct fuse_conn_info *conn)
 {
     fprintf(stderr, "in bb-init\n");
     log_msg("\nsfs_init()\n");
+<<<<<<< HEAD
+    
+    log_conn(conn);
+    log_fuse_context(fuse_get_context());
+
+=======
     log_conn(conn);
     log_fuse_context(fuse_get_context());
     superBlock *superblock;
@@ -191,6 +203,7 @@ void *sfs_init(struct fuse_conn_info *conn)
     write_superblock(superblock);
     write_inode(0,rootInode);
     //print_superBlock();
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
     return SFS_DATA;
 }
 
@@ -216,9 +229,37 @@ int sfs_getattr(const char *path, struct stat *statbuf)
 {
     int retstat = 0;
     char fpath[PATH_MAX];
+<<<<<<< HEAD
     
     log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
 	  path, statbuf);
+=======
+<<<<<<< HEAD
+    
+    log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
+	  path, statbuf);
+=======
+
+    memset(statbuf, 0, sizeof *statbuf);
+    
+    log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
+	  path, statbuf);
+
+      iNode* inode = calloc(1, sizeof(iNode));
+      iNode* parentInode = calloc(1,sizeof(iNode));
+      path_to_inode(path, inode, true, parentInode);
+
+
+      statbuf->st_uid = inode->userID;
+      statbuf->st_gid = inode->groupID;
+      statbuf->st_mode = inode->type;
+      statbuf->st_size = inode->totalSize;
+      statbuf->st_ctime = inode->creationTime;
+      statbuf->st_atime = inode->lastAccessedTime;
+      statbuf->st_mtime = inode->lastUpdatedTime;
+
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
+>>>>>>> 744e4bd0afe62232f45cf411be486a418f596dc7
     
     return retstat;
 }
@@ -240,6 +281,36 @@ int sfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
     int retstat = 0;
     log_msg("\nsfs_create(path=\"%s\", mode=0%03o, fi=0x%08x)\n",
 	    path, mode, fi);
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+
+    int i;
+
+    int check_block = get_free_block();
+    int check_inode = get_free_inode(NULL);
+
+    if(check_block==-1){
+      printf("All disks blocks are currently occupied\n");
+      return -1;
+    }
+
+    if(check_inode==-1){
+      printf("All inodes are currently occupied\n");
+      return -1;
+    }
+
+
+    iNode* inode = calloc(1, sizeof(iNode));
+    iNode* parentInode = calloc(1, sizeof(iNode));
+    path_to_inode(path, inode, getParent, parentInode);
+    read_inode(inodeNo, inode);
+    initialize_inode();
+
+
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
+>>>>>>> 744e4bd0afe62232f45cf411be486a418f596dc7
     
     
     return retstat;
@@ -250,6 +321,10 @@ int sfs_unlink(const char *path)
 {
     int retstat = 0;
     log_msg("sfs_unlink(path=\"%s\")\n", path);
+<<<<<<< HEAD
+
+    
+=======
     long counter1,counter2,counter3;
     iNode *fileInode, *parentInode;
     fileInode = calloc(1,sizeof(iNode));
@@ -283,6 +358,7 @@ int sfs_unlink(const char *path)
     
     free (parentInode);
     free (fileInode);
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
     return retstat;
 }
 
@@ -436,8 +512,26 @@ int sfs_opendir(const char *path, struct fuse_file_info *fi)
 int sfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset,
 	       struct fuse_file_info *fi)
 {
+<<<<<<< HEAD
     int retstat = 0;
     
+=======
+<<<<<<< HEAD
+    int retstat = 0;
+    
+=======
+
+    if (strcmp(path, "/")){
+      return -ENOENT;
+    }
+    int retstat = 0;
+    
+    filler(buf, ".", NULL, 0);
+    filler(buf, "..", NULL, 0);
+
+
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
+>>>>>>> 744e4bd0afe62232f45cf411be486a418f596dc7
     
     return retstat;
 }
@@ -494,20 +588,31 @@ int main(int argc, char *argv[])
 	perror("main calloc");
 	abort();
     }
+<<<<<<< HEAD
+
+=======
 	
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
     // Pull the diskfile and save it in internal data
     sfs_data->diskfile = argv[argc-2];
     argv[argc-2] = argv[argc-1];
     argv[argc-1] = NULL;
     argc--;
+<<<<<<< HEAD
+    
+=======
     disk_open(sfs_data->diskfile);
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
     sfs_data->logfile = log_open();
     
     // turn over control to fuse
     fprintf(stderr, "about to call fuse_main, %s \n", sfs_data->diskfile);
     fuse_stat = fuse_main(argc, argv, &sfs_oper, sfs_data);
     fprintf(stderr, "fuse_main returned %d\n", fuse_stat);
+<<<<<<< HEAD
+=======
     disk_close();
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
     
     return fuse_stat;
 }

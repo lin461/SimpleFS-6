@@ -22,10 +22,16 @@ void disk_open(const char* diskfile_path)
 	return;
     }
     
+<<<<<<< HEAD
+    diskfile = open(diskfile_path, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+    if (diskfile < 0) {
+	perror("disk_open failed");
+=======
     diskfile = open(diskfile_path, O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);	
     if (diskfile < 0) {
 	perror("disk_open failed");
 
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 	exit(EXIT_FAILURE);
     }
 }

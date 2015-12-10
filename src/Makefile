@@ -150,12 +150,21 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+<<<<<<< HEAD
+ACLOCAL = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing aclocal-1.14
+AMTAR = $${TAR-tar}
+AM_DEFAULT_VERBOSITY = 1
+AUTOCONF = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing autoconf
+AUTOHEADER = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing autoheader
+AUTOMAKE = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing automake-1.14
+=======
 ACLOCAL = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing aclocal-1.14
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
 AUTOCONF = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing autoconf
 AUTOHEADER = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing autoheader
 AUTOMAKE = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing automake-1.14
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -182,7 +191,11 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
+<<<<<<< HEAD
+MAKEINFO = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/missing makeinfo
+=======
 MAKEINFO = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/missing makeinfo
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = fuse-tutorial
@@ -200,10 +213,17 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 2014-06-12
+<<<<<<< HEAD
+abs_builddir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/src
+abs_srcdir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/src
+abs_top_builddir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2
+abs_top_srcdir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2
+=======
 abs_builddir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/src
 abs_srcdir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/src
 abs_top_builddir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS
 abs_top_srcdir = /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -222,7 +242,11 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
+<<<<<<< HEAD
+install_sh = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/assignment2/install-sh
+=======
 install_sh = ${SHELL} /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/install-sh
+>>>>>>> b94e82d783da50186db429f92bb8875ebc909221
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
