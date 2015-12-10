@@ -65,7 +65,7 @@ typedef struct
      unsigned int lastUpdatedTime;  // Time when superblock was last updated
     } superBlock;
 
-
+#define NO_OF_FILES_IN_A_DIRECTORY 10000 // Calculate and change it!!!!!!!!!
 #define NO_OF_DIRECT_POINTERS 10
 #define NO_OF_SINGLE_INDIRECTION_POINTERS 5
 #define NO_OF_DOUBLE_INDIRECTION_POINTERS 3
@@ -109,7 +109,7 @@ int read_superblock(superBlock* superblock);
 int write_superblock(superBlock* superblock);
 int get_free_block();
 int set_free_block(int blockNo);
-int get_free_inode();
+int get_free_inode(); // We will find free inode and initialize it and give it back!!!!!!!!!
 int path_to_inode(const char* path,iNode *inode,  bool getParent,iNode *parent);
 //int set_free_inode();
 //FOR TESTING
@@ -216,9 +216,25 @@ int sfs_getattr(const char *path, struct stat *statbuf)
 {
     int retstat = 0;
     char fpath[PATH_MAX];
+
+    memset(statbuf, 0, sizeof *statbuf);
     
     log_msg("\nsfs_getattr(path=\"%s\", statbuf=0x%08x)\n",
 	  path, statbuf);
+
+      iNode* inode = calloc(1, sizeof(iNode));
+      iNode* parentInode = calloc(1,sizeof(iNode));
+      path_to_inode(path, inode, true, parentInode);
+
+
+      statbuf->st_uid = inode->userID;
+      statbuf->st_gid = inode->groupID;
+      statbuf->st_mode = inode->type;
+      statbuf->st_size = inode->totalSize;
+      statbuf->st_ctime = inode->creationTime;
+      statbuf->st_atime = inode->lastAccessedTime;
+      statbuf->st_mtime = inode->lastUpdatedTime;
+
     
     return retstat;
 }
@@ -240,6 +256,30 @@ int sfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
     int retstat = 0;
     log_msg("\nsfs_create(path=\"%s\", mode=0%03o, fi=0x%08x)\n",
 	    path, mode, fi);
+
+    int i;
+
+    int check_block = get_free_block();
+    int check_inode = get_free_inode(NULL);
+
+    if(check_block==-1){
+      printf("All disks blocks are currently occupied\n");
+      return -1;
+    }
+
+    if(check_inode==-1){
+      printf("All inodes are currently occupied\n");
+      return -1;
+    }
+
+
+    iNode* inode = calloc(1, sizeof(iNode));
+    iNode* parentInode = calloc(1, sizeof(iNode));
+    path_to_inode(path, inode, getParent, parentInode);
+    read_inode(inodeNo, inode);
+    initialize_inode();
+
+
     
     
     return retstat;
@@ -436,8 +476,16 @@ int sfs_opendir(const char *path, struct fuse_file_info *fi)
 int sfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset,
 	       struct fuse_file_info *fi)
 {
+
+    if (strcmp(path, "/")){
+      return -ENOENT;
+    }
     int retstat = 0;
     
+    filler(buf, ".", NULL, 0);
+    filler(buf, "..", NULL, 0);
+
+
     
     return retstat;
 }
