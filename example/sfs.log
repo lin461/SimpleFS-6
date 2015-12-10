@@ -1,0 +1,23 @@
+
+sfs_init()
+    conn:
+    proto_major = 7
+    proto_minor = 13
+    async_read = 1
+    max_write = 131072
+    max_readahead = 131072
+    capable = 0000007b
+    want = 00000010
+    context:
+    fuse = 01074510
+    uid = 0
+    gid = 0
+    pid = 0
+    private_data = 01074010
+    logfile = 01074030
+    diskfile = /.autofs/ilab/ilab_users/rk681/OSD_HW2/SimpleFS/testfsfile
+    umask = 00000
+
+print superBlock() - creationTime 0
+
+sfs_destroy(userdata=0x01074010)

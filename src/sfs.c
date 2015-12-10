@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <math.h>
 #include <stdbool.h>
+#include <string.h>
+#include <time.h>
 
 #ifdef HAVE_SYS_XATTR_H
 #include <sys/xattr.h>
@@ -55,12 +57,12 @@ typedef struct
     {
      long driveSize; // size of drive
      long freeBlocks; // no of free blocks available for users
-     bool blockStatus [NO_OF_BLOCKS]; // 0 if free, 1 otherwise 
+     bool blockStatus [NO_OF_BLOCKS]; // isFree - true if free, false otherwise 
      int iNodeBlocksStart; //Block no from where iNode's begin
      int noOfInodeBlocks;  //no of contiguous blocks which contains iNode
      int noOfFreeInodes;   // Number of free inodes
-     time_t creationDateTime;  // Time of creation of the superblock
-     time_t lastUpdatedDateTime;  // Time when superblock was last updated
+     unsigned int creationTime;  // Time of creation of the superblock
+     unsigned int lastUpdatedTime;  // Time when superblock was last updated
     } superBlock;
 
 
@@ -68,43 +70,127 @@ typedef struct
 #define NO_OF_SINGLE_INDIRECTION_POINTERS 5
 #define NO_OF_DOUBLE_INDIRECTION_POINTERS 3
 #define MAX_FILE_NAME_SIZE 64 
+#define NO_OF_INODE_BLOCKS 1000	
 #define INODES_PER_BLOCK (int)floor(BLOCK_SIZE/sizeof(iNode))
-#define NO_OF_POINTERS_IN_INDIRECT_BLOCKS (int)floor(BLOCK_SIZE/sizeof(long))
+#define NO_OF_POINTERS_IN_INDIRECT_BLOCKS (long)floor(BLOCK_SIZE/sizeof(long))
+#define DIRECTORY 1
+#define FILE 0
+
     
  typedef struct
     {
      long inodeNo; // Unique identification number of each inode
-     int type;     // file/directory inode
+     int type;     // 0 for file, 1 for directory inode.. macros
      char name[MAX_FILE_NAME_SIZE];  // Name of the file/directory
      int userID;   // Owner of the file/directory
-     long totalFileSize;  // Size of the file
+     long totalSize;  // Size of the file/directory
      long noOfBlocks;     // Number of blocks allocated to the file
      bool inUse;          // Status of inode
-     long dataBlockNos[NO_OF_DIRECT_POINTERS];  
+     long dataBlockNos[NO_OF_DIRECT_POINTERS]; // block numbers in case of files, inode numbers in case of directories
      long singleIndirectionPointers[NO_OF_SINGLE_INDIRECTION_POINTERS];
      long doubleIndirectionPointers[NO_OF_DOUBLE_INDIRECTION_POINTERS];
-     time_t creationDateTime;   // Time of creation of the file/directory
-     time_t lastUpdatedDateTime;  // Time of last updation of file/directory
-     time_t lastAccessedDateTime; // Time when file/directory was last accessed
+     unsigned int  creationTime;   // Time of creation of the file/directory
+     unsigned int  lastUpdatedTime;  // Time of last updation of file/directory
+     unsigned int  lastAccessedTime; // Time when file/directory was last accessed
     } iNode;
  
 
     typedef struct
     {
        long pointers[NO_OF_POINTERS_IN_INDIRECT_BLOCKS]; 
-    } indirectBlocks;
+    } indirectBlock;
+
+
+
+
+int read_inode(int inodeNo, iNode* inode);
+int write_inode(int inodeNo, iNode* inode);
+int read_superblock(superBlock* superblock);
+int write_superblock(superBlock* superblock);
+int get_free_block();
+int set_free_block(int blockNo);
+int get_free_inode();
+int path_to_inode(const char* path,iNode *inode,  bool getParent,iNode *parent);
+//int set_free_inode();
+//FOR TESTING
+void print_inode(inode);
+void print_superblock()
+{
+char *test;
+test = calloc (1,BLOCK_SIZE);
+
+block_read (0,(void *)test);
+
+log_msg("\nprint superBlock() - creationTime %d\n", ((superBlock *)test)->creationTime);
+//fprintf(stderr, "\n superblock \n", ((superBlock *)test)->creationTime);
+
+}
+
+int blockwrite(int blockNo, long offset,const void *data,long sizeOfData)
+{
+	//if(sizeOfData<BLOCK_SIZE)
+		char *writeBuffer = calloc (1,BLOCK_SIZE);
+	//else
+		//char *writeBuffer = data;
+        long counter1;
+	
+	for (counter1=0;counter1<sizeOfData;counter1++)
+		writeBuffer[offset+counter1] = *((char*)data + counter1);
+	int returnvalue = block_write(blockNo,(void *)writeBuffer);
+	free (writeBuffer);
+	return returnvalue;
+}
+
+int blockread(int blockNo, long offset,const void *data,long sizeOfData);
 
 void *sfs_init(struct fuse_conn_info *conn)
 {
     fprintf(stderr, "in bb-init\n");
     log_msg("\nsfs_init()\n");
-    int counter1=0;
-    char *zeroes = calloc(1,BLOCK_SIZE);
-    for (counter1=0;counter1<NO_OF_BLOCKS;counter1++)
-        block_write(counter1,(const void *)zeroes);
     log_conn(conn);
     log_fuse_context(fuse_get_context());
+    superBlock *superblock;
+    iNode *rootInode;
 
+    int counter1=0;
+    //block_write(NO_OF_BLOCKS,(void *)writeBuffer);
+    //for (counter1=0;counter1<NO_OF_BLOCKS;counter1++)
+    	//block_write(counter1,(void *)writeBuffer);
+    //create and initialize superblock
+    superblock = calloc (1, sizeof(superBlock));
+    superblock -> driveSize = NO_OF_BLOCKS * BLOCK_SIZE;
+    superblock -> noOfInodeBlocks = NO_OF_INODE_BLOCKS;
+    superblock -> freeBlocks = NO_OF_BLOCKS - (int)ceil(sizeof(superblock)/BLOCK_SIZE) - superblock -> noOfInodeBlocks;
+    for (counter1 = 0;counter1<(NO_OF_BLOCKS-superblock -> freeBlocks) ;counter1++)    
+	superblock -> blockStatus[counter1] = true;
+    for (;counter1<NO_OF_BLOCKS;counter1++)
+	superblock -> blockStatus[counter1] = false;
+    superblock -> iNodeBlocksStart = (int)ceil(sizeof(superblock)/BLOCK_SIZE);
+    superblock -> noOfFreeInodes = (INODES_PER_BLOCK*NO_OF_INODE_BLOCKS)- 1;
+
+    struct fuse_context *fuseContext = fuse_get_context();
+    rootInode = calloc (1, sizeof(iNode));
+    rootInode -> inodeNo = 0;
+    rootInode -> type = DIRECTORY;
+    strcpy (rootInode -> name,"root");
+    rootInode -> userID=fuseContext -> uid;
+    rootInode -> totalSize = sizeof(iNode);
+    rootInode -> noOfBlocks=0;
+    rootInode -> inUse = 1;
+    for (counter1=0;counter1<NO_OF_DIRECT_POINTERS;counter1++)
+    	rootInode -> dataBlockNos[NO_OF_DIRECT_POINTERS]=-1;
+    for (counter1=0;counter1<NO_OF_SINGLE_INDIRECTION_POINTERS;counter1++)
+    	rootInode -> singleIndirectionPointers[NO_OF_SINGLE_INDIRECTION_POINTERS]=-1;
+    for (counter1=0;counter1<NO_OF_DOUBLE_INDIRECTION_POINTERS;counter1++)
+    	rootInode -> doubleIndirectionPointers[NO_OF_DOUBLE_INDIRECTION_POINTERS]=-1;
+    rootInode -> creationTime= time(NULL);
+    rootInode -> lastUpdatedTime= rootInode -> creationTime;
+    rootInode -> lastAccessedTime= rootInode -> creationTime;
+    superblock -> creationTime= rootInode -> creationTime;
+    superblock -> lastUpdatedTime= rootInode -> creationTime;
+    write_superblock(superblock);
+    write_inode(0,rootInode);
+    //print_superBlock();
     return SFS_DATA;
 }
 
@@ -164,8 +250,39 @@ int sfs_unlink(const char *path)
 {
     int retstat = 0;
     log_msg("sfs_unlink(path=\"%s\")\n", path);
-
+    long counter1,counter2,counter3;
+    iNode *fileInode, *parentInode;
+    fileInode = calloc(1,sizeof(iNode));
+    parentInode = calloc(1,sizeof(iNode));
+    path_to_inode(path,fileInode,true, parentInode);
+    indirectBlock *indirectblock = calloc (1,sizeof(indirectBlock));
+    // free all data blocks of fileInode and mark them as free on superblock bitmap
+    for (counter1=0;counter1<NO_OF_DIRECT_POINTERS;counter1++)
+	if (fileInode->dataBlockNos[counter1] != -1)	
+		{
+		set_block_free(fileInode->dataBlockNos[counter1] );
+		fileInode->dataBlockNos[counter1] = -1;
+		}
+    for (counter1=0;counter1<NO_OF_SINGLE_INDIRECTION_POINTERS;counter1++)
+	{
+	readdata(singleIndirectionPointers[counter1],indirectblock);// CHANGE IT
+	for (counter2=0; counter2 <  NO_OF_POINTERS_IN_INDIRECT_BLOCKS; counter2++)
+		{
+		
+		set_block_free(indirectblock -> pointers[counter2]);
+		fileInode->dataBlockNos[counter1] = -1;
+		}
+        set_block_free();
+		-1;
+	}
+    singleIndirectionPointers[NO_OF_SINGLE_INDIRECTION_POINTERS];
+    doubleIndirectionPointers[NO_OF_DOUBLE_INDIRECTION_POINTERS];
+    // mark the inode to be free in hard disk and associated superblock updates
+    // find the link to file in parent iNode and mark as -1 ie pointing to nothing 
+    // and write the parent inode to disk
     
+    free (parentInode);
+    free (fileInode);
     return retstat;
 }
 
@@ -377,19 +494,20 @@ int main(int argc, char *argv[])
 	perror("main calloc");
 	abort();
     }
-
+	
     // Pull the diskfile and save it in internal data
     sfs_data->diskfile = argv[argc-2];
     argv[argc-2] = argv[argc-1];
     argv[argc-1] = NULL;
     argc--;
-    
+    disk_open(sfs_data->diskfile);
     sfs_data->logfile = log_open();
     
     // turn over control to fuse
     fprintf(stderr, "about to call fuse_main, %s \n", sfs_data->diskfile);
     fuse_stat = fuse_main(argc, argv, &sfs_oper, sfs_data);
     fprintf(stderr, "fuse_main returned %d\n", fuse_stat);
+    disk_close();
     
     return fuse_stat;
 }
